@@ -148,7 +148,6 @@ class PDFHandler:
             if "P" in element["Path"]in element["Path"]:
                 if index >= sectionsIndex[0] and index < sectionsIndex[-1]:
                     fullText += element["Text"]
-            
         return fullText
         
     
@@ -158,5 +157,12 @@ class PDFHandler:
         for page in pdf_reader.pages:
             text += page.extract_text()
         return text
-
-
+    
+    def getTitle(self):
+        structuredData = self.getStructuredData()
+        for element in structuredData["elements"]:
+                if "Title" in element["Path"]:
+                    return element["Text"]
+                
+                  
+                    

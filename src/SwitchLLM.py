@@ -6,14 +6,12 @@ from langchain.chat_models import ChatOpenAI
 from langchain.llms.octoai_endpoint import OctoAIEndpoint
 from src.api.octoAICloud import OctoAiCloudLLM
 from src.api.huggingface_endpoint import HuggingFaceEndpoint
-
 import os
-
 
 def switchLLM(model_name):
     llm=None
    
-    if model_name=='ChatOpenAI':
+    if model_name=='gpt-3.5-turbo':
         llm = ChatOpenAI()
         
     elif model_name=='flan-t5-xxl_huggingface':
@@ -29,10 +27,10 @@ def switchLLM(model_name):
         llm = Replicate(model="replicate/vicuna-13b:6282abe6a492de4145d7bb601023762212f9ddbbe78278bd6771c8b3b2f2a13b",
                         input= {"max_length":8000,"max_new_tokens": 8000})
     elif model_name=='llama_v2_13b_replicate':
-        llm = Replicate(model="a16z-infra/llama13b-v2-chat:6b4da803a2382c08868c5af10a523892f38e2de1aafb2ee55b020d9efef2fdb8",
+        llm = Replicate(model="a16z-infra/llama13b-v2-chat:d5da4236b006f967ceb7da037be9cfc3924b20d21fed88e1e94f19d56e2d3111",
                         input= {"max_length":2048,"max_new_tokens": 2048})
     elif model_name=='llama_v2_70b_replicate':
-        llm = Replicate(model="replicate/llama70b-v2-chat:2d19859030ff705a87c746f7e96eea03aefb71f166725aee39692f1476566d48",
+        llm = Replicate(model="replicate/llama70b-v2-chat:2c1608e18606fad2812020dc541930f2d0495ce32eee50074220b87300bc16e1",
                         input= {"max_length":2048,"max_new_tokens": 2048})
     elif model_name=='falcon7b_octoAI':
         llm = OctoAIEndpoint(

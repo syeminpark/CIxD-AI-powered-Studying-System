@@ -6,7 +6,7 @@ LLMList=['llama_v2_13b_replicate',
          'vicuna13b_replicate',
          #'falcon7b_octoAI',
          'flan-t5-xxl_huggingface',
-         'ChatOpenAI',
+         'gpt-3.5-turbo',
          
          
          ]
