@@ -47,7 +47,7 @@ class StreamlitWrapper:
             #                 if i % 2 == 0:
             #                     message(conversation.content, is_user=True, avatar_style= 'pixel-art',key=str(i) + '_user')
             #                 else:
-            #                     message(conversation.content, key=str(i))
+            #                     message(conversation.content, key=str(i)) 
       
     def setSidebarConfigs(self,args,pdfHandler):
         with streamlit.sidebar:
