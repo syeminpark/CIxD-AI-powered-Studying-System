@@ -1,4 +1,4 @@
-# CIxD Aipowered Studying System
+# PIXIE: Papers In uX & Interaction Exploration
 
 Demo: https://cixd-aipowered-studying-system.streamlit.app  
 Medium Blog: https://medium.com/@soccer0874/9f618e52940a  
