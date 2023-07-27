@@ -12,7 +12,7 @@ CIxD AIpowered Studying System is a Python application that allows you to chat w
 ## How It Works
 ------------
 
-## Dependencies and Installation
+## Dependencies and Installation 
 ----------------------------
 To install 'CIxD Aipowered Studying System', please follow these steps:
 
