@@ -161,3 +161,4 @@ cython_debug/
 
 TheBloke_wizard-vicuna-13B-SuperHOT-8K-GPTQ/
 *.zip
+/AutoGPTQ
