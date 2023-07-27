@@ -149,11 +149,12 @@ def main():
             with streamlit.spinner("Processing"): 
               
                 dict={}
-                r_prompt  =  """You will be given a title: {title} and a dictionary: {most_important_sents} that contains section titles as its keys and descriptions of those sections as its values.
+                r_prompt  =  """You will be given a title: {title} and a dictionary: {most_important_sents} that contains section titles as its keys and the content of those sections as its values.
            
                 Your first goal is to add the title at the top of your response. 
-                Your next goal is to deconstruct the dictionary, and place the section titles and elaborate each section's descriptions in bullet points
-                SUMMARY :"""
+                Your next goal is to deconstruct the dictionary, and place the section title, and summarize each section's content under the section title.
+                
+                Section Titles and Content :"""
                 
                 sectionNameList=[]
                 for sectionName in streamlit.session_state.section_text:
