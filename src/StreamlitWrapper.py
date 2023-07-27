@@ -29,9 +29,6 @@ class StreamlitWrapper:
           
     def setInputContainer(self,name):
          ##########containers
-   
-       
- 
             #유저가 텍스트 입력할 수 있는 곳 
             with streamlit.form(key='my_form', clear_on_submit=True):
                 user_input = streamlit.text_area(name, key='input', height=100)

@@ -16,14 +16,14 @@ def main():
     load_dotenv()
     #main configs
     configs={
-        'page_title':'PoXIE',
+        'page_title':'PIXIE',
         'page_icon': ':robot_face:',
         'header': "PIXIE: Papers In uX & Interaction Exploration"
     }
     streamlitWrapper = StreamlitWrapper(configs)
     #streamlit sidebar configs
     sidebarConfigs={
-        'fileUploadText':'Upload a CHI, DIS format paper and click on "Process"',
+        'fileUploadText':'Upload a pdf"',
         'subHeaderText': "CIxD Papers",
         'captionText' : "Select one or more papers to learn."
     }
@@ -41,7 +41,7 @@ def main():
             message('Hello. This is PIXIE :)')
             message('Lets explore UX & Interaction Papers together!')
             message('I can 1. Summarize 2. Generate Questions 3. Generate Answers based on CHI, DIS format publications')
-            message("To talk with me, upload a paper or select a publication, then click on the 'SHARE WITH PIXIE` Button. ")
+            message("To talk with me, upload a paper or select a publication, then click on the 'SHARE WITH PIXIE` nutton. ")
             message("See you soon!")
 
     else:
@@ -50,6 +50,7 @@ def main():
         mode=streamlitWrapper.getMode()
         
         match mode:
+################################# Mode:Summary #################################
             case "Summary":
                 streamlit.session_state.chat_history=['Welcome to the ' + mode +'  mode!', 
                           'I prepared some of my own prompts to create summaries. You can try them by pressing the buttons below :)',
@@ -90,7 +91,7 @@ def main():
                     elif summaryButton and i==0:
                         with streamlit.spinner("Processing"): 
                         
-                            dict={}
+                            dictionary={}
                             r_prompt  =  """You will be given a title: {title} and a dictionary: {most_important_sents} that contains section titles as its keys and the content of those sections as its values.
                     
                             Your first goal is to add the title at the top of your response. 
@@ -105,32 +106,28 @@ def main():
                             for i in range(len(streamlit.session_state.section_text)):
                                 summarization=Summarization(r_prompt,llm,model_name,10)
                                 most_important_sents =summarization.lexRank(streamlit.session_state.section_text[sectionNameList[i]])
-                                dict[sectionNameList[i]]=most_important_sents 
+                                dictionary[sectionNameList[i]]=most_important_sents 
                             summarization=Summarization(r_prompt,llm,model_name)
-                            summary=summarization.generateSummary(str(dict),pdfHandler.getTitle())
+                            summary=summarization.generateSummary(str(dictionary),pdfHandler.getTitle())
                             streamlit.session_state.chat_history.append(summary)
             
                 with responseContainer:
                     for chat in streamlit.session_state.chat_history:
-                        print(chat)
                         message(chat)
                 streamlitWrapper.setInputContainer('Ask PIXIE: ')
                    
-            
+################################# Mode: Question Generation #################################
             case "Question Generation":
                
                 with  responseContainer:
                      message('Welcome to the ' + mode +' mode.')
                      streamlitWrapper.setInputContainer('Ask PIXIE: ')
-                
+                     
+################################# Mode: Question Answering #################################
             case 'Answer Generation':
                 with  responseContainer:
                     message('Welcome to the ' + mode +' mode.')
                     streamlitWrapper.setInputContainer('Ask PIXIE: ')
             
-    
-     
-        
-  #########################################
 if __name__ == '__main__': 
     main()
