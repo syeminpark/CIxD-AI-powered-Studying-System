@@ -53,7 +53,8 @@ class PDFHandler:
             extract_pdf_operation = ExtractPDFOperation.create_new()
             source=None
             if type=='stream':
-                source = FileRef.create_from_stream(self.streamData, 'application/pdf')
+                source = FileRef.create_from_stream(self.streamData, self.streamData.type)
+              
             elif type=='local_file':
                 source = FileRef.create_from_local_file(self.input_pdf)
 
@@ -66,19 +67,22 @@ class PDFHandler:
             extract_pdf_operation.set_options(extract_pdf_options)
             result: FileRef = extract_pdf_operation.execute(execution_context)
             result.save_as(self.zip_file)
+            
+
 
         except (ServiceApiException, ServiceUsageException, SdkException):
             logging.exception("Exception encountered while executing operation")
 
+            
     def getStructuredData(self):
         archive = zipfile.ZipFile(self.zip_file, "r")
         jsonentry = archive.open("structuredData.json")
         jsondata = jsonentry.read()
         structuredData = json.loads(jsondata)
         return structuredData
-
     def getSections(self):
         structuredData = self.getStructuredData()
+        
         H1_sections = {}
         sections = {}
         startIndex = 0
@@ -119,14 +123,15 @@ class PDFHandler:
         
         for index in sections:
             sectionsIndex.append(index)
-        print('sectionNames',sections)
+    
+       
         return sections,sectionsIndex
+        
 
     def getFilteredTextBySection(self) :
         sections, sectionsIndex = self.getSections()
         structuredData = self.getStructuredData()
         sectionText = {}
-
         for x in range(len(sectionsIndex) - 1):
             text = ""
 

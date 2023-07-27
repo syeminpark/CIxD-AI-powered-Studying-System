@@ -1,81 +1,104 @@
 import streamlit  #streamlit is the GUI 
 from src.htmlTemplates import css, bot_template, user_template
-from src.PDFHandler import PDFHandler
-from src.chain import get_conversation_chain, get_text_chunks, get_vectorstore
-
+from st_chat_message import message
+from os import listdir
+from os.path import isfile, join
+from src.config import LLMList
 class StreamlitWrapper:
-    def __init__(self) -> None:
-        self.user_question=''
-    
-    def initialize(self):
-        pageTitle= "CIXD Senior Bot"
-        pageIcon=':books'
-        modeOptions=['Summary','Section Q&A', 'Free Talking','Topic Recommendation' ]
-        textInputQuestion="Ask a question about to your senior:"
-        header= "CIxD Senior Bot :books:"
+    def __init__(self,args) -> None:
         
-        streamlit.set_page_config(page_title=pageTitle,
-                       page_icon=pageIcon)
+        streamlit.set_page_config(page_title=args['page_title'], page_icon=args['page_icon'])
         streamlit.write(css, unsafe_allow_html=True)
-        
+        streamlit.header(args['header'])
+    
+          ##############global variables
         if "conversation" not in streamlit.session_state:
             streamlit.session_state.conversation = None
         if  "chat_history" not in streamlit.session_state:
             streamlit.session_state.chat_history = None
+        if  "section_text" not in streamlit.session_state:
+            streamlit.session_state.section_text = None
+        if  "full_text" not in streamlit.session_state:
+            streamlit.session_state.full_text = None
             
-        streamlit.header(header)
-        modeselect = streamlit.selectbox('Select the Mode: ', options=[*modeOptions])
-        streamlit.write('Selected Mode: ', modeselect)
-        self.user_question = streamlit.text_input(textInputQuestion)
+        self.pdf_checkbox=[]
+        self.inputContainer = streamlit.container()
+        self.responseContainer = streamlit.container()
+        self.defaultContainer=streamlit.container()
+
+          
+    def setInputContainer(self,name):
+         ##########containers
+   
        
-            
-    def initializeSideBar(self):
-        fileUploadText="Upload your own PDF here and click on 'Process'"
-        accept_multiple_files=False
-        subheaderText="CIxD Papers"
-        captionText="Select one or more papers to learn."
-        pdf_list=  ["Design Opportunities in Three Stages", "Teaching-Learning Interaction","Co-Performing Agent","Non-finito","Ten-Minute Silence"]
-        pdf_file_names=["pdf/file_1.pdf","pdf/file_2.pdf","pdf/file_3.pdf","pdf/file_4.pdf","pdf/file_5.pdf"]
-        pdf_checkbox=[]
-        
-        with streamlit.sidebar:
-            pdf_docs = streamlit.file_uploader(
-                 fileUploadText, accept_multiple_files= accept_multiple_files) #this just lets us enable this function
-            streamlit.subheader(subheaderText)
-            streamlit.caption(captionText)
-            for pdf in pdf_list:
-                pdf_checkbox.append(streamlit.checkbox(pdf))
+ 
+            #유저가 텍스트 입력할 수 있는 곳 
+            with streamlit.form(key='my_form', clear_on_submit=True):
+                user_input = streamlit.text_area(name, key='input', height=100)
+                submit_button = streamlit.form_submit_button(label='Send')
                 
-            if streamlit.button("Process!"):
-                raw_text=''
+            if submit_button and user_input:
+                response = streamlit.session_state.conversation({'question': user_input})
+                streamlit.session_state.chat_history = response['chat_history']
+        
+            # if streamlit.session_state['chat_history']:
+            #         with self.responseContainer:
+            #             for i, conversation in enumerate(streamlit.session_state.chat_history):
+            #                 if i % 2 == 0:
+            #                     message(conversation.content, is_user=True, avatar_style= 'pixel-art',key=str(i) + '_user')
+            #                 else:
+            #                     message(conversation.content, key=str(i))
+      
+    def setSidebarConfigs(self,args,pdfHandler):
+        with streamlit.sidebar:
+            self.model_name = streamlit.sidebar.radio("Choose a model:", [*LLMList])
+            self.uploadedPDF = streamlit.file_uploader(
+                    args['fileUploadText'], accept_multiple_files= False,type="pdf") #this just lets us enable this function
+            streamlit.subheader(args['subHeaderText'])
+            streamlit.caption(args['captionText'])
+        
+          
+            pdfFiles = [f for f in listdir('./pdf/') if isfile(join( './pdf/', f))]
+            for pdf in pdfFiles:
+                self.pdf_checkbox.append(streamlit.checkbox(pdf))
+            
+            if streamlit.button("SHARE WITH PIXIE"):
                 with streamlit.spinner("Processing"): 
-                    for index, checkedpdf in enumerate(pdf_checkbox):
+                    for index, checkedpdf in enumerate(self.pdf_checkbox):
                         if(checkedpdf):
-                            PDFHandler.get_unfiltered_pdf_text(pdf_file_names[index])
-                            raw_text+=PDFHandler.get_unfiltered_pdf_text(pdf_file_names[index])
-                    if(pdf_docs):
-                        raw_text=PDFHandler.get_unfiltered_pdf_text(pdf_docs)
-                    text_chunks = get_text_chunks(raw_text)
-                    vectorstore = get_vectorstore(text_chunks)
-                    streamlit.session_state.conversation = get_conversation_chain(
-                    vectorstore)
-                    
-    def interaction(self):
-         if self.user_question:
-            self.handle_userInput(self.user_question)
-                                
+                            pdfHandler.setPdfFile('./pdf/' +pdfFiles[index])
+                            pdfHandler.structurePDF('local_file')
+                            
+                            streamlit.session_state.full_text=pdfHandler.getFilteredText()
+                            streamlit.session_state.section_text =pdfHandler.getFilteredTextBySection()
+                            
+                    if(self.uploadedPDF):
+                     
+                        pdfHandler.setStreamData(self.uploadedPDF)
+                        pdfHandler.structurePDF('stream')
+                        streamlit.session_state.full_text=pdfHandler.getFilteredText()
+                        streamlit.session_state.section_text =pdfHandler.getFilteredTextBySection()
+                        
+    def isFileProcessed(self):
+        if streamlit.session_state.section_text != None or  streamlit.session_state.full_text != None:
+            return True
+        else:
+            return False
+      
         
-    def handle_userInput(self,user_question):
-        response = streamlit.session_state.conversation({'question': user_question})
-        streamlit.session_state.chat_history = response['chat_history']
-        for i, message in enumerate(streamlit.session_state.chat_history):
-            if i % 2 == 0:
-                streamlit.write(user_template.replace(
-                    "{{MSG}}", message.content), unsafe_allow_html=True)
-            else:
-                streamlit.write(bot_template.replace(
-                    "{{MSG}}", message.content), unsafe_allow_html=True)
+    def setMode(self,text, modeOptions,):
+        with self.inputContainer:
+            self.mode= streamlit.selectbox(text,options=[*modeOptions])
         
+        
+    def getMode(self):
+        return self.mode
     
-        
-         
+    def getModelName(self):
+        return self.model_name
+    
+    def getResponseContainer(self):
+        return self.responseContainer
+    
+    def getDefaultContainer(self):
+        return self.defaultContainer
