@@ -3,7 +3,7 @@
 Demo: https://cixd-aipowered-studying-system.streamlit.app  
 Medium Blog: https://medium.com/@soccer0874/9f618e52940a  
 
-![alt text](https://github.com/syeminpark/PIXIE-Papers-In-uX-Interaction-Exploration/blob/main/PIXIE.JPG?raw=true)
+![alt text](https://github.com/syeminpark/PIXIE-Papers-In-uX-Interaction-Exploration/blob/main/pixie_image.JPG?raw=true)
 
 ## Introduction 
 ------------
