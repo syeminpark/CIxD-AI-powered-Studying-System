@@ -1,13 +1,15 @@
-# PIXIE: Papers In uX & Interaction Exploration
+
+
+![alt text](https://github.com/syeminpark/PIXIE-Papers-In-uX-Interaction-Exploration/blob/main/pixie_image.JPG?raw=true)
+
 
 Demo: https://cixd-aipowered-studying-system.streamlit.app  
 Medium Blog: https://medium.com/@soccer0874/9f618e52940a  
 
-![alt text](https://github.com/syeminpark/PIXIE-Papers-In-uX-Interaction-Exploration/blob/main/pixie_image.JPG?raw=true)
 
 ## Introduction 
 ------------
-CIxD AIpowered Studying System is a Python application that allows you to chat with PDF documents, KAIST Cixd lab research papers to be specific. The application offers 4 modes; summarization, question generation, answer generation and topic recommendation. This app provides the option to choose a diverse range of language models to generate answers to your queries. Please note that the app will only respond to questions related to the loaded PDFs.
+PIXIE  is a Python application that allows you to chat with PDF documents, KAIST Cixd lab research papers to be specific. The application offers 3 modes; summarization, question generation, answer generation. This app provides the option to choose a diverse range of language models to generate answers to your queries. Please note that the app will only respond to questions related to the loaded PDFs.
 
 ## How It Works 
 ------------
