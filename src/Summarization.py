@@ -29,8 +29,8 @@ class Summarization:
         prompt= PromptTemplate(template=input, input_variables=["most_important_sents", 'text'])
          
         if(self.llmName!='gpt-3.5-turbo'):
-            return self.llm(prompt=prompt.format(most_important_sents=most_important_sents , title=text))
+            return self.llm(prompt=prompt.format(most_important_sents=most_important_sents , text=text))
         else:
-            return self.llm.predict_messages([HumanMessage(content= prompt.format(most_important_sents=most_important_sents, title=text))]).content
+            return self.llm.predict_messages([HumanMessage(content= prompt.format(most_important_sents=most_important_sents, text=text))]).content
     
    

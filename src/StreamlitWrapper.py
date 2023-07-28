@@ -57,7 +57,7 @@ class StreamlitWrapper:
                 self.pdf_checkbox.append(streamlit.checkbox(pdf))
             
             if streamlit.button("SHARE WITH PIXIE"):
-                with streamlit.spinner("Processing"): 
+                with streamlit.spinner("Pixie is reading..."): 
                     for index, checkedpdf in enumerate(self.pdf_checkbox):
                         if(checkedpdf):
                             pdfHandler.setPdfFile('./pdf/' +pdfFiles[index])

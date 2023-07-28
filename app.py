@@ -70,7 +70,7 @@ def main():
                     #if a button is clicked except for the 'summarize All' Button
                     index=i-1
                     if summaryButton and i> 0:  
-                        with streamlit.spinner("Processing"): 
+                        with streamlit.spinner("Pixie is thinking..."): 
                             sectionNameList=[]
                             for sectionName in streamlit.session_state.section_text:
                                 sectionNameList.append(sectionName)
@@ -92,7 +92,7 @@ def main():
                                     
                     #################summarize the entire text 
                     elif summaryButton and i==0:
-                        with streamlit.spinner("Processing"): 
+                        with streamlit.spinner("Pixie is thinking..."): 
                         
                             dictionary={}
                             prompt  =  """You will be given a title: {text} and a dictionary: {most_important_sents} that contains section titles as its keys and the content of those sections as its values.
@@ -160,7 +160,7 @@ def main():
                 streamlitWrapper.setInputContainer('Ask PIXIE: ')
                 if streamlitWrapper.userInput():
                     userInput=streamlitWrapper.userInput()
-                    with streamlit.spinner("Processing"): 
+                    with streamlit.spinner("Pixie is thinking..."): 
                      
                         response = streamlit.session_state.conversation({'question': userInput})
                         streamlit.session_state.chat_history = response['chat_history']
