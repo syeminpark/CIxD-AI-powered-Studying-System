@@ -34,6 +34,9 @@ def main():
     llm=switchLLM(streamlitWrapper.getModelName())
     responseContainer=streamlitWrapper.getResponseContainer()
     
+    userAvatar='pixel-art'
+    userName='Cixd Member'
+    
 
   ######## Mode changer #################################
     if not streamlitWrapper.isFileProcessed():
@@ -130,13 +133,10 @@ def main():
                         
                         fullTextSummarization=Summarization(llm,model_name,60)
                         most_important_sents= fullTextSummarization.lexRank(streamlit.session_state.full_text)
-                    
                         summary=fullTextSummarization.generateSummary(prompt,most_important_sents,userInput)
-                        print(summary)
                         if streamlit.session_state.chat_history==None:
                             streamlit.session_state.chat_history=[]
-                        
-                        streamlit.session_state.chat_history.append(prompt)
+                        streamlit.session_state.chat_history.append(userInput)
                         streamlit.session_state.chat_history.append(summary)
                         
             
@@ -144,8 +144,12 @@ def main():
                 with responseContainer:
                     for chat in streamlit.session_state.default_chat:
                         message(chat)
+                    for i, chat in enumerate(streamlit.session_state.chat_history):
+                        if i % 2 == 0:
+                            message(chat, is_user=True, avatar_style= userAvatar ,key=str(i) + userName)
+                        else:
+                            message(chat, key=str(i)) 
                     
-                   
 ################################# Mode: Question Generation #################################
             case "Question Generation":
                

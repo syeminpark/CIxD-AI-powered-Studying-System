@@ -122,5 +122,4 @@ class Replicate(LLM):
         while prediction.status!=  'succeeded':
             prediction.reload()
        
-        return {'input':prediction.input['prompt'],
-                'output':''.join(prediction.output)}
+        return''.join(prediction.output)
