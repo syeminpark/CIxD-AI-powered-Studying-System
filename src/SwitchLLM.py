@@ -1,7 +1,7 @@
 
 from langchain.llms import HuggingFaceHub # hugging face can replace the openAI model
 from src.api.wz13 import wizardVicuna13
-from src.api.repli import Replicate
+from langchain.llms.replicate import Replicate
 from langchain.chat_models import ChatOpenAI
 from langchain.llms.octoai_endpoint import OctoAIEndpoint
 from src.api.octoAICloud import OctoAiCloudLLM

@@ -1,11 +1,8 @@
 from st_chat_message import message
 import streamlit  #streamlit is the GUI 
-from src.htmlTemplates import css, bot_template, user_template
-from src.chain import get_conversation_chain, get_text_chunks, get_vectorstore, get_embeddings, qa
 from dotenv import load_dotenv
 from src.PDFHandler import PDFHandler
-from os import listdir
-from os.path import isfile, join
+from src.QA import QA
 from src.SwitchLLM import switchLLM
 from src.Summarization import Summarization
 
@@ -27,16 +24,19 @@ def main():
         'subHeaderText': "CIxD Papers",
         'captionText' : "Select one or more papers to learn."
     }
-    modeOptions=['Summary','Question Generation','Answer Generation']
-    pdfHandler=PDFHandler('./ExtractTextInfoFromPDF.zip')
-    streamlitWrapper.setSidebarConfigs(sidebarConfigs,pdfHandler)
+ 
+    streamlitWrapper.setSidebarConfigs(sidebarConfigs,)
     model_name=streamlitWrapper.getModelName()
     llm=switchLLM(streamlitWrapper.getModelName())
     responseContainer=streamlitWrapper.getResponseContainer()
     
+    pdfHandler=PDFHandler('./ExtractTextInfoFromPDF.zip')
+    qa= QA()
+    streamlitWrapper.handlePDFOperation(pdfHandler,qa,llm)
+    
+    modeOptions=['Summary','Q/A','Answer Generation']
     userAvatar='pixel-art'
     userName='Cixd Member'
-    
 
   ######## Mode changer #################################
     if not streamlitWrapper.isFileProcessed():
@@ -54,10 +54,10 @@ def main():
         match mode:
 ################################# Mode:Summary #################################
             case "Summary":
-              
+                streamlitWrapper.resetConversation()
                 streamlit.session_state.default_chat= [
-                'Pixie here!', 'After reading the paper, I prepared some of my own summaries. You can try them by pressing the buttons below :)',
-                    "You can also ask me to do summaries in different ways, if you don't like it! ", "But remember to read the paper first, then see my summary. That way you can compare, reflect on what you think is important in the text to what I think is important."]
+                'Pixie here!', 'After reading the paper, I wanted to organize my thoughts and wrote down some of my own summaries. You can investigate them by pressing the buttons below :)',
+                    "You can also ask me to do summaries in different ways, if there is something wrong... What do you think makes a summary great?", "But I recommend reading the paper first and then seeing my summaries. This way you can compare what you think is important, to what I thought was the essence of the text. "]
                  
                 summarySectionButtonsList=[]
          
@@ -87,7 +87,7 @@ def main():
                         
                             most_important_sents =sectionSummarization.lexRank(streamlit.session_state.section_text[sectionNameList[index]])
                             summary=sectionSummarization.generateSummary(prompt,most_important_sents, sectionNameList[index])
-                            streamlit.session_state.default_chat.append(summary['output'])
+                            streamlit.session_state.default_chat.append(summary)
                             
                                     
                     #################summarize the entire text 
@@ -112,7 +112,7 @@ def main():
                                 dictionary[sectionNameList[i]]=most_important_sents 
                             fullTextSummarization=Summarization(llm,model_name)
                             summary= fullTextSummarization.generateSummary(prompt,str(dictionary),pdfHandler.getTitle())
-                            streamlit.session_state.default_chat.append(summary['output'])
+                            streamlit.session_state.default_chat.append(summary)
                 
                 ##############INPUT############    
                 streamlitWrapper.setInputContainer('Ask PIXIE: ')
@@ -151,13 +151,32 @@ def main():
                             message(chat, key=str(i)) 
                     
 ################################# Mode: Question Generation #################################
-            case "Question Generation":
+            case "Q/A":
+                streamlitWrapper.resetConversation()
+                streamlit.session_state.default_chat= [
+                'Pixie here!', "Phew. Did I say this paper was really hard? Because it was! I was forced to utilize my note taking skills to the max and wrote down factual details regarding this paper.", 
+                "You can look at some of my notes by pressing the 'OPEN PIXIE's NOTES' button below. ", 'If you have any other factual questions from the paper, just ask me and I will search my notes to help you.']
+                 
+                streamlitWrapper.setInputContainer('Ask PIXIE: ')
+                if streamlitWrapper.userInput():
+                    userInput=streamlitWrapper.userInput()
+                    with streamlit.spinner("Processing"): 
+                     
+                        response = streamlit.session_state.conversation({'question': userInput})
+                        streamlit.session_state.chat_history = response['chat_history']
+                        
                
-                with  responseContainer:
-                     message('Welcome to the ' + mode +' mode.')
-                     streamlitWrapper.setInputContainer('Ask PIXIE: ')
+                with responseContainer:
+                    for chat in streamlit.session_state.default_chat:
+                        message(chat)
+                    for i, chat in enumerate(streamlit.session_state.chat_history):
+                        if i % 2 == 0:
+                            message(chat.content, is_user=True, avatar_style= userAvatar ,key=str(i) + userName)
+                        else:
+                            message(chat.content, key=str(i)) 
                      
 ################################# Mode: Question Answering #################################
+
             case 'Answer Generation':
                 with  responseContainer:
                     message('Welcome to the ' + mode +' mode.')
@@ -165,3 +184,5 @@ def main():
             
 if __name__ == '__main__': 
     main()
+
+

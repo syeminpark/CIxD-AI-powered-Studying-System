@@ -121,5 +121,7 @@ class Replicate(LLM):
 
         while prediction.status!=  'succeeded':
             prediction.reload()
-       
+            
+        print('prediction_ status',prediction.status)
+
         return''.join(prediction.output)

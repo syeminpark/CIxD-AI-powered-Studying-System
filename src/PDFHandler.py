@@ -150,6 +150,9 @@ class PDFHandler:
         fullText=''
         
         for index, element in enumerate(structuredData["elements"]):
+            if "Title" in element["Path"]:
+                    fullText +='Title:'+ element["Text"]
+                
             if "P" in element["Path"]in element["Path"]:
                 if index >= sectionsIndex[0] and index < sectionsIndex[-1]:
                     fullText += element["Text"]
@@ -169,5 +172,4 @@ class PDFHandler:
                 if "Title" in element["Path"]:
                     return element["Text"]
                 
-                  
-                    
+

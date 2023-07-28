@@ -24,13 +24,15 @@ def get_text_chunks(text):
     
     
 def get_vectorstore(text_chunks):
-    embeddings = HuggingFaceInstructEmbeddings(model_name="intfloat/e5-large-v2")
+    #embeddings =HuggingFaceInstructEmbeddings(model_name="intfloat/e5-large-v2")
+    embeddings = HuggingFaceInstructEmbeddings(model_name="intfloat/multilingual-e5-large")
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
 
     return vectorstore
 
 def get_embeddings(text_chunks):
-    embeddings =HuggingFaceInstructEmbeddings(model_name="intfloat/e5-large-v2")
+    #embeddings =HuggingFaceInstructEmbeddings(model_name="intfloat/e5-large-v2")
+    embeddings =HuggingFaceInstructEmbeddings(model_name="intfloat/multilingual-e5-large")
     return embeddings.embed_documents(text_chunks)
     
 
@@ -43,23 +45,6 @@ def get_conversation_chain(vectorstore,llm):
         memory=memory
     )
     return conversation_chain
-
-def visualize_Atlas(text,projectName):
-    ids=[]
-    for id in text:
-        ids.append(id)
-    nomic.login(os.getenv("ATLAS_TEST_API_KEY"))
-    embeddings=get_embeddings(text)
-    numpy_embeddings= numpy.array(embeddings)
-                    
-    onlineMap= atlas.map_embeddings(name='projectName',
-    description= "",
-    is_public = True,
-    reset_project_if_exists=True,
-    embeddings= numpy_embeddings,
-    data=[{'id': id} for id in ids])
-    print(onlineMap.maps)
-    
 
     
 def qa(vectorstore,llm, query):
