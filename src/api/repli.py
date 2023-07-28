@@ -90,7 +90,7 @@ class Replicate(LLM):
         stop: Optional[List[str]] = None,
         run_manager: Optional[CallbackManagerForLLMRun] = None,
         **kwargs: Any,
-    ) -> str:
+    ):
         """Call to replicate endpoint."""
         try:
             import replicate as replicate_python
@@ -122,5 +122,5 @@ class Replicate(LLM):
         while prediction.status!=  'succeeded':
             prediction.reload()
        
-        print('prediction: end')
-        return ''.join(prediction.output)
+        return {'input':prediction.input['prompt'],
+                'output':''.join(prediction.output)}

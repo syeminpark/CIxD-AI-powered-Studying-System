@@ -38,12 +38,11 @@ def main():
   ######## Mode changer #################################
     if not streamlitWrapper.isFileProcessed():
         with responseContainer:
-            message('Hello. This is PIXIE :)')
-            message('Lets explore UX & Interaction Papers together!')
-            message('I can 1. Summarize 2. Generate Questions 3. Generate Answers based on CHI, DIS format publications')
-            message("To talk with me, upload a paper or select a publication, then click on the 'SHARE WITH PIXIE` nutton. ")
+            message('Hello. This is Pixie Park (박픽시) :) I am a 1st year master student in CIxD Lab.')
+            message("Lets explore our lab's papers together!")
+            message('Although I am a newbie, I can still decently summarize, answer questions, and provide feeback on HCI papers.')
+            message("To talk with me, upload or select a publication, then click the 'SHARE WITH PIXIE` button. ")
             message("See you soon!")
-
     else:
      
         streamlitWrapper.setMode('Select the Mode: ', modeOptions)
@@ -52,9 +51,10 @@ def main():
         match mode:
 ################################# Mode:Summary #################################
             case "Summary":
-                streamlit.session_state.chat_history=['Welcome to the ' + mode +'  mode!', 
-                          'I prepared some of my own prompts to create summaries. You can try them by pressing the buttons below :)',
-                          "You can also write your own prompts for summarization! "]
+              
+                streamlit.session_state.default_chat= [
+                'Pixie here!', 'After reading the paper, I prepared some of my own summaries. You can try them by pressing the buttons below :)',
+                    "You can also ask me to do summaries in different ways, if you don't like it! ", "But remember to read the paper first, then see my summary. That way you can compare, reflect on what you think is important in the text to what I think is important."]
                  
                 summarySectionButtonsList=[]
          
@@ -76,15 +76,15 @@ def main():
                             The title will be enclosed in double backtrips (``).
                             The sentences will be enclosed in triple backtrips (```).
                             title: 
-                            ``{title}``
+                            ``{text}``
                             sentences : 
                             ```{most_important_sents}```
                             SUMMARY :"""
-                            summarization=Summarization(prompt,llm,model_name)
+                            sectionSummarization=Summarization(llm,model_name)
                         
-                            most_important_sents =summarization.lexRank(streamlit.session_state.section_text[sectionNameList[index]])
-                            summary=summarization.generateSummary(most_important_sents, sectionNameList[index])
-                            streamlit.session_state.chat_history.append(summary)
+                            most_important_sents =sectionSummarization.lexRank(streamlit.session_state.section_text[sectionNameList[index]])
+                            summary=sectionSummarization.generateSummary(prompt,most_important_sents, sectionNameList[index])
+                            streamlit.session_state.default_chat.append(summary['output'])
                             
                                     
                     #################summarize the entire text 
@@ -92,7 +92,7 @@ def main():
                         with streamlit.spinner("Processing"): 
                         
                             dictionary={}
-                            r_prompt  =  """You will be given a title: {title} and a dictionary: {most_important_sents} that contains section titles as its keys and the content of those sections as its values.
+                            prompt  =  """You will be given a title: {text} and a dictionary: {most_important_sents} that contains section titles as its keys and the content of those sections as its values.
                     
                             Your first goal is to add the title at the top of your response. 
                             Your next goal is to deconstruct the dictionary, and place the section title, and summarize each section's content under the section title.
@@ -104,17 +104,47 @@ def main():
                                 sectionNameList.append(sectionName)
                                 
                             for i in range(len(streamlit.session_state.section_text)):
-                                summarization=Summarization(r_prompt,llm,model_name,10)
-                                most_important_sents =summarization.lexRank(streamlit.session_state.section_text[sectionNameList[i]])
+                                sectionSummarization=Summarization(llm,model_name,10)
+                                most_important_sents= sectionSummarization.lexRank(streamlit.session_state.section_text[sectionNameList[i]])
                                 dictionary[sectionNameList[i]]=most_important_sents 
-                            summarization=Summarization(r_prompt,llm,model_name)
-                            summary=summarization.generateSummary(str(dictionary),pdfHandler.getTitle())
-                            streamlit.session_state.chat_history.append(summary)
-            
-                with responseContainer:
-                    for chat in streamlit.session_state.chat_history:
-                        message(chat)
+                            fullTextSummarization=Summarization(llm,model_name)
+                            summary= fullTextSummarization.generateSummary(prompt,str(dictionary),pdfHandler.getTitle())
+                            streamlit.session_state.default_chat.append(summary['output'])
+                
+                ##############INPUT############    
                 streamlitWrapper.setInputContainer('Ask PIXIE: ')
+                if streamlitWrapper.userInput():
+                    userInput=streamlitWrapper.userInput()
+                    with streamlit.spinner("Processing"): 
+                        prompt  =  """
+                            You will be given a series of sentences from a paper.
+                            Your goal is to manipulate this paper with an additional instruction:
+                            
+                            The instruction will be enclosed in double backtrips (``)
+                            The sentences will be enclosed in triple backtrips (```)
+                            
+                            instrcition: ``{text}``
+                            sentences : ```{most_important_sents}```
+
+                            Response :"""
+                        
+                        fullTextSummarization=Summarization(llm,model_name,60)
+                        most_important_sents= fullTextSummarization.lexRank(streamlit.session_state.full_text)
+                    
+                        summary=fullTextSummarization.generateSummary(prompt,most_important_sents,userInput)
+                        print(summary)
+                        if streamlit.session_state.chat_history==None:
+                            streamlit.session_state.chat_history=[]
+                        
+                        streamlit.session_state.chat_history.append(prompt)
+                        streamlit.session_state.chat_history.append(summary)
+                        
+            
+                #########################Chat
+                with responseContainer:
+                    for chat in streamlit.session_state.default_chat:
+                        message(chat)
+                    
                    
 ################################# Mode: Question Generation #################################
             case "Question Generation":

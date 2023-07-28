@@ -15,7 +15,9 @@ class StreamlitWrapper:
         if "conversation" not in streamlit.session_state:
             streamlit.session_state.conversation = None
         if  "chat_history" not in streamlit.session_state:
-            streamlit.session_state.chat_history = None
+            streamlit.session_state.chat_history = []
+        if  "default_chat" not in streamlit.session_state:
+            streamlit.session_state.default_chat = None
         if  "section_text" not in streamlit.session_state:
             streamlit.session_state.section_text = None
         if  "full_text" not in streamlit.session_state:
@@ -25,18 +27,19 @@ class StreamlitWrapper:
         self.inputContainer = streamlit.container()
         self.responseContainer = streamlit.container()
         self.defaultContainer=streamlit.container()
-
+      
           
     def setInputContainer(self,name):
          ##########containers
             #유저가 텍스트 입력할 수 있는 곳 
             with streamlit.form(key='my_form', clear_on_submit=True):
-                user_input = streamlit.text_area(name, key='input', height=100)
-                submit_button = streamlit.form_submit_button(label='Send')
+                self.user_input = streamlit.text_area(name, key='input', height=100)
+                self.submit_button = streamlit.form_submit_button(label='Send')
                 
-            if submit_button and user_input:
-                response = streamlit.session_state.conversation({'question': user_input})
-                streamlit.session_state.chat_history = response['chat_history']
+            
+                #response = streamlit.session_state.conversation({'question': user_input})
+                #streamlit.session_state.chat_history = response['chat_history']
+                
         
             # if streamlit.session_state['chat_history']:
             #         with self.responseContainer:
@@ -99,3 +102,12 @@ class StreamlitWrapper:
     
     def getDefaultContainer(self):
         return self.defaultContainer
+    
+    def userInput(self):
+        
+        if self.submit_button and self.user_input:
+            return self.user_input
+        else:
+            return False
+    
+    

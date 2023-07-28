@@ -6,8 +6,7 @@ from sumy.nlp.tokenizers import Tokenizer
 from summarizer import Summarizer
 
 class Summarization:
-    def __init__(self,prompt,llm,llmName,sentenceCount=40) -> None:
-        self.prompt=prompt
+    def __init__(self,llm,llmName,sentenceCount=40) -> None:
         self.formattedPrompt=''
         self.llm=llm
         self.llmName=llmName
@@ -26,10 +25,11 @@ class Summarization:
         most_important_sents = model(text, num_sentences=self.sentenceCount) # We specify a number of sentences
         return most_important_sents
     
-    def generateSummary(self,most_important_sents,title):
-        prompt_summarize_most_important_sents   = PromptTemplate(template=self.prompt, input_variables=["most_important_sents", 'title'])
-         
+    def generateSummary(self,input,most_important_sents,text):
+        prompt= PromptTemplate(template=input, input_variables=["most_important_sents", 'text'])
         if(self.llmName!='gpt-3.5-turbo'):
-            return self.llm(prompt=prompt_summarize_most_important_sents.format(most_important_sents=most_important_sents , title=title))
+            return self.llm(prompt=prompt.format(most_important_sents=most_important_sents , text=text))
         else:
-            return self.llm.predict_messages([HumanMessage(content= prompt_summarize_most_important_sents.format(most_important_sents=most_important_sents, title=title))]).content
+            return self.llm.predict_messages([HumanMessage(content= prompt.format(most_important_sents=most_important_sents, text=text))]).content
+    
+   
