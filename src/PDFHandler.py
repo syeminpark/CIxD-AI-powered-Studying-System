@@ -43,8 +43,11 @@ class PDFHandler:
         
     def structurePDF(self,type):
 
-        if os.path.isfile(os.getcwd()+'/tmp/sdk_result' +self.zip_file):
-            os.remove(os.getcwd()+'/tmp/sdk_result' +self.zip_file)
+        if os.path.isfile('./tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip'):
+            os.remove('./tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip')
+
+        if os.path.isfile(os.getcwd()+ self.zip_file):
+            os.remove(os.getcwd()+ self.zip_file)
 
         try:
             credentials = (
@@ -71,9 +74,8 @@ class PDFHandler:
             extract_pdf_operation.set_options(extract_pdf_options)
             result: FileRef = extract_pdf_operation.execute(execution_context)
             print( )
-            result.save_as(os.getcwd()+'/tmp/sdk_result' +self.zip_file)
-  
-            # shutil.copyfile('./tmp/sdk_result' +self.zip_file,  self.zip_file)
+            result.save_as('./tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip')
+            shutil.copy2('./tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip', os.getcwd()+ self.zip_file)
             
 
 
@@ -82,7 +84,7 @@ class PDFHandler:
 
             
     def getStructuredData(self):
-        archive = zipfile.ZipFile(os.getcwd()+'/tmp/sdk_result' +self.zip_file, "r")
+        archive = zipfile.ZipFile(os.getcwd()+ self.zip_file, "r")
         jsonentry = archive.open("structuredData.json")
         jsondata = jsonentry.read()
         structuredData = json.loads(jsondata)
