@@ -23,6 +23,8 @@ from dotenv import load_dotenv
 import re
 from PyPDF2 import PdfReader
 from shutil import move
+import shutil
+
 
 class PDFHandler:
 
@@ -41,7 +43,10 @@ class PDFHandler:
         
     def structurePDF(self,type):
         if os.path.isfile(self.zip_file):
-            move(self.zip_file)
+            os.remove(self.zip_file)
+
+        if os.path.isfile('./tmp/sdk_result' +self.zip_file):
+            os.remove('./tmp/sdk_result' +self.zip_file)
 
         try:
             credentials = (
@@ -67,7 +72,9 @@ class PDFHandler:
             )
             extract_pdf_operation.set_options(extract_pdf_options)
             result: FileRef = extract_pdf_operation.execute(execution_context)
-            result.save_as(self.zip_file)
+            
+            result.save_as('./tmp/sdk_result' +self.zip_file)
+            # shutil.copyfile('./tmp/sdk_result' +self.zip_file,  self.zip_file)
             
 
 
@@ -76,7 +83,7 @@ class PDFHandler:
 
             
     def getStructuredData(self):
-        archive = zipfile.ZipFile(self.zip_file, "r")
+        archive = zipfile.ZipFile('./tmp/sdk_result' +self.zip_file, "r")
         jsonentry = archive.open("structuredData.json")
         jsondata = jsonentry.read()
         structuredData = json.loads(jsondata)

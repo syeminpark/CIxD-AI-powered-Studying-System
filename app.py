@@ -30,7 +30,7 @@ def main():
     llm=switchLLM(streamlitWrapper.getModelName())
     responseContainer=streamlitWrapper.getResponseContainer()
     
-    pdfHandler=PDFHandler('./ExtractTextInfoFromPDF.zip')
+    pdfHandler=PDFHandler('/ExtractTextInfoFromPDF.zip')
     qa= QA()
     streamlitWrapper.handlePDFOperation(pdfHandler,qa,llm)
     
