@@ -42,8 +42,6 @@ class PDFHandler:
         self.streamData=data
         
     def structurePDF(self,type):
-        if os.path.isfile(self.zip_file):
-            os.remove(self.zip_file)
 
         if os.path.isfile('./tmp/sdk_result' +self.zip_file):
             os.remove('./tmp/sdk_result' +self.zip_file)
@@ -74,6 +72,7 @@ class PDFHandler:
             result: FileRef = extract_pdf_operation.execute(execution_context)
             
             result.save_as('./tmp/sdk_result' +self.zip_file)
+            print(os.getcwd() )
             # shutil.copyfile('./tmp/sdk_result' +self.zip_file,  self.zip_file)
             
 
