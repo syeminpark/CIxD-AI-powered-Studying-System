@@ -51,9 +51,9 @@ def main():
         streamlitWrapper.setMode('Select the Mode: ', modeOptions)
         mode=streamlitWrapper.getMode()
         
-        match mode:
+        
 ################################# Mode:Summary #################################
-            case "Summary":
+        if mode== "Summary":
                 streamlitWrapper.resetConversation()
                 streamlit.session_state.default_chat= [
                 'Pixie here!', 'After reading the paper, I wanted to organize my thoughts and wrote down some of my own summaries. You can investigate them by pressing the buttons below :)',
@@ -151,7 +151,7 @@ def main():
                             message(chat, key=str(i)) 
                     
 ################################# Mode: Question Generation #################################
-            case "Q/A":
+        elif mode== "Q/A":
                 streamlitWrapper.resetConversation()
                 streamlit.session_state.default_chat= [
                 'Pixie here!', "Phew. Did I say this paper was really hard? Because it was! I was forced to utilize my note taking skills to the max and wrote down factual details regarding this paper.", 
@@ -177,7 +177,7 @@ def main():
                      
 ################################# Mode: Question Answering #################################
 
-            case 'Answer Generation':
+        elif mode== 'Answer Generation':
                 with  responseContainer:
                     message('Welcome to the ' + mode +' mode.')
                     streamlitWrapper.setInputContainer('Ask PIXIE: ')
