@@ -1,6 +1,6 @@
 import streamlit  #streamlit is the GUI 
 from src.htmlTemplates import css, bot_template, user_template
-from st_chat_pyth import message
+from st_chat_message import message
 from os import listdir
 from os.path import isfile, join
 from src.config import LLMList
