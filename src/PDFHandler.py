@@ -22,6 +22,7 @@ import logging
 from dotenv import load_dotenv
 import re
 from PyPDF2 import PdfReader
+from shutil import move
 
 class PDFHandler:
 
@@ -40,7 +41,7 @@ class PDFHandler:
         
     def structurePDF(self,type):
         if os.path.isfile(self.zip_file):
-            os.remove(self.zip_file)
+            move(self.zip_file)
 
         try:
             credentials = (
