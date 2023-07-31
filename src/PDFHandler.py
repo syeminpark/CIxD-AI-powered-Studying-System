@@ -43,8 +43,8 @@ class PDFHandler:
         
     def structurePDF(self,type):
 
-        if os.path.isfile('./tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip'):
-            os.remove('./tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip')
+        if os.path.isfile('/tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip'):
+            os.remove('/tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip')
 
         if os.path.isfile(os.getcwd()+ self.zip_file):
             os.remove(os.getcwd()+ self.zip_file)
@@ -74,8 +74,8 @@ class PDFHandler:
             extract_pdf_operation.set_options(extract_pdf_options)
             result: FileRef = extract_pdf_operation.execute(execution_context)
             print( )
-            result.save_as('./tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip')
-            shutil.copy2('./tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip', os.getcwd()+ self.zip_file)
+            result.save_as('/tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip')
+            shutil.copy2('/tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip', os.getcwd()+ self.zip_file)
             
 
 
