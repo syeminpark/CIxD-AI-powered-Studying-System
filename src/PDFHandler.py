@@ -79,15 +79,12 @@ class PDFHandler:
             extract_pdf_operation.set_options(extract_pdf_options)
             result: FileRef = extract_pdf_operation.execute(execution_context)
       
-             #windows
+            #windows
             if os.name == 'nt':
                 print('windows',os.getcwd())
-                result.save_as("tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip")
-                shutil.copy2("tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip", os.getcwd()+ self.zip_file)
-                
-            else: 
                 result.save_as("/tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip")
                 shutil.copy2("/tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip", os.getcwd()+ self.zip_file)
+      
             
 
 
