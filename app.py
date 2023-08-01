@@ -180,7 +180,7 @@ def main():
                         # response = streamlit.session_state.qaChain({'query': prompt})
                         #streamlit.session_state.default_chat.append(response['result'])
                         
-                        #streamlit.session_state.default_chat.append(response)
+                        streamlit.session_state.default_chat.append(response)
                             
                            
                 streamlitWrapper.setInputContainer('Ask PIXIE: ')
@@ -195,7 +195,7 @@ def main():
                
                 with responseContainer:
                     for chat in streamlit.session_state.default_chat:
-                        
+                            
                             message(chat,avatar_style=pixieAvatar)
                             
                     for i, chat in enumerate(streamlit.session_state.chat_history):
