@@ -7,6 +7,7 @@ from src.SwitchLLM import switchLLM
 from src.Summarization import Summarization
 
 from src.StreamlitWrapper import StreamlitWrapper
+import src.nltkmodules
 
 
 def main():
