@@ -7,9 +7,9 @@ from src.SwitchLLM import switchLLM
 from src.Summarization import Summarization
 
 from src.StreamlitWrapper import StreamlitWrapper
-import nltk
+# import nltk
 
-nltk.download('punkt')
+# nltk.download('punkt')
 
 def main():
     load_dotenv()
