@@ -1,6 +1,7 @@
 import streamlit  #streamlit is the GUI 
 from src.htmlTemplates import css, bot_template, user_template
 from streamlit_chat import message
+#from st_chat_message import message
 from os import listdir
 from os.path import isfile, join
 from src.config import LLMList
@@ -12,8 +13,8 @@ class StreamlitWrapper:
         streamlit.header(args['header'])
     
           ##############global variables
-        if "conversation" not in streamlit.session_state:
-            streamlit.session_state.conversation = None
+        if "conversationChain" not in streamlit.session_state:
+            streamlit.session_state.conversationChain = None
         if  "chat_history" not in streamlit.session_state:
             streamlit.session_state.chat_history = []
         if  "default_chat" not in streamlit.session_state:
@@ -22,7 +23,8 @@ class StreamlitWrapper:
             streamlit.session_state.section_text = None
         if  "full_text" not in streamlit.session_state:
             streamlit.session_state.full_text = None
-        
+        if "qaChain" not in streamlit.session_state:
+            streamlit.session_state.qaChain=None
             
         self.pdf_checkbox=[]
         self.inputContainer = streamlit.container()
@@ -68,7 +70,9 @@ class StreamlitWrapper:
                             
                             text_chunks= qa.get_text_chunks(streamlit.session_state.full_text)
                             vectorstore=qa. get_vectorstore(text_chunks,'intfloat/e5-small-v2')
-                            streamlit.session_state.conversation=qa.get_conversation_chain(vectorstore,llm)
+                            streamlit.session_state.qaChain =qa.getRetrievalQA(vectorstore,llm)
+                            streamlit.session_state.conversationChain=qa.get_conversation_chain(vectorstore,llm)
+                            
                             
                     if(self.uploadedPDF):
                      
@@ -79,7 +83,8 @@ class StreamlitWrapper:
                         
                         text_chunks= qa.get_text_chunks(streamlit.session_state.full_text)
                         vectorstore=qa. get_vectorstore(text_chunks,'intfloat/e5-small-v2')
-                        streamlit.session_state.conversation=qa.get_conversation_chain(vectorstore,llm)
+                        streamlit.session_state.conversationChain=qa.get_conversation_chain(vectorstore,llm)
+                        streamlit.session_state.qaChain =qa.getRetrievalQA(vectorstore,llm)
                         
     def isFileProcessed(self):
         if streamlit.session_state.section_text != None or  streamlit.session_state.full_text != None:

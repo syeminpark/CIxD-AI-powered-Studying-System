@@ -27,7 +27,7 @@ class Summarization:
         most_important_sents = model(text, num_sentences=sentenceCount) # We specify a number of sentences
         return most_important_sents
     
-    def generateSummary(self,input,most_important_sents,text):
+    def generate(self,input,most_important_sents,text):
         prompt= PromptTemplate(template=input, input_variables=["most_important_sents", 'text'])
          
         if(self.llmName!='gpt-3.5-turbo'):

@@ -7,7 +7,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from langchain.embeddings import HuggingFaceInstructEmbeddings
-
+from langchain.chains import RetrievalQA
 
 class QA:
     def __init__(self) -> None:
@@ -43,6 +43,10 @@ class QA:
             memory=memory
         )
         return conversation_chain
+
+    def getRetrievalQA(self,vectorstore,llm,):
+        return RetrievalQA.from_chain_type(llm,retriever=vectorstore.as_retriever())
+        
     
-    
+
     

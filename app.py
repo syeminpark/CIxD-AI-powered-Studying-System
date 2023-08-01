@@ -1,5 +1,5 @@
 from streamlit_chat import message
-
+#from st_chat_message import message
 import streamlit  #streamlit is the GUI 
 from dotenv import load_dotenv
 from src.PDFHandler import PDFHandler
@@ -42,7 +42,7 @@ def main():
     qa= QA()
     streamlitWrapper.handlePDFOperation(pdfHandler,qa,llm)
     
-    modeOptions=['Summary','Q/A','Answer Generation']
+    modeOptions=['Summary','Q/A','Comments & Feedback']
     userAvatar='pixel-art'
     userName='Cixd Member'
     summarization=Summarization(llm,model_name,lexRank)
@@ -84,7 +84,7 @@ def main():
                             for sectionName in streamlit.session_state.section_text:
                                 sectionNameList.append(sectionName)
                             
-                            prompt  =   """You will be given a title and a series of sentences from a paper. Your first goal is to add the title at the top of your response. Your next goal is to give a summary of the paper in approximately 10 bulletpoints. 
+                            prompt  =   """You will be given a title and a series of sentences from a paper. Your first goal is to add the title at the top of your response. Your next goal is to organize the main structure of the paper in bullet points.
                             The title will be enclosed in double backtrips (``).
                             The sentences will be enclosed in triple backtrips (```).
                             title: 
@@ -94,7 +94,7 @@ def main():
                             SUMMARY :"""
                             
                             most_important_sents =summarization.lexRank(streamlit.session_state.section_text[sectionNameList[index]])
-                            summary=summarization.generateSummary(prompt,most_important_sents, sectionNameList[index])
+                            summary=summarization.generate(prompt,most_important_sents, sectionNameList[index])
                             streamlit.session_state.default_chat.append(summary)
                             
                                     
@@ -118,7 +118,7 @@ def main():
                                 most_important_sents= summarization.lexRank(streamlit.session_state.section_text[sectionNameList[i]],10)
                                 dictionary[sectionNameList[i]]=most_important_sents 
                      
-                            summary= summarization.generateSummary(prompt,str(dictionary),pdfHandler.getTitle())
+                            summary= summarization.generate(prompt,str(dictionary),pdfHandler.getTitle())
                             streamlit.session_state.default_chat.append(summary)
                 
                 ##############INPUT############    
@@ -133,13 +133,13 @@ def main():
                             The instruction will be enclosed in double backtrips (``)
                             The sentences will be enclosed in triple backtrips (```)
                             
-                            instrcition: ``{text}``
+                            instruction: ``{text}``
                             sentences : ```{most_important_sents}```
 
                             Response :"""
                         
                         most_important_sents= summarization.lexRank(streamlit.session_state.full_text,60)
-                        summary=summarization.generateSummary(prompt,most_important_sents,userInput)
+                        summary=summarization.generate(prompt,most_important_sents,userInput)
                         if streamlit.session_state.chat_history==None:
                             streamlit.session_state.chat_history=[]
                         streamlit.session_state.chat_history.append(userInput)
@@ -162,14 +162,33 @@ def main():
                 streamlit.session_state.default_chat= [
                 'Pixie here!', "Phew. Did I say this paper was really hard? Because it was! I was forced to utilize my note taking skills to the max and wrote down factual details regarding this paper.", 
                 "You can look at some of my notes by pressing the 'OPEN PIXIE's NOTES' button below. ", 'If you have any other factual questions from the paper, just ask me and I will search my notes to help you.']
-                 
+                
+                if streamlit.button("OPEN PIXIE's NOTES"):
+                    with streamlit.spinner("Pixie is thinking..."): 
+                        prompt  =  """
+                        You will be given a series of sentences from a paper. The sentences will be enclosed in triple backtrips (```).
+                        Your goal is to create a list of approximately 10 most meaningful questions that may be of interest to a reader. 
+                        These questions must have specific answers in the provided text. Then find and write their answers under each question.
+                        sentences : ```{most_important_sents}{text}```
+                        Response :"""
+                        
+                        most_important_sents= summarization.lexRank(streamlit.session_state.full_text,60)
+                        response=summarization.generate(prompt,most_important_sents,"")
+                        print(response)
+                        #prompt  =   """Create a list of questions that may be of interest to a reader. These questions must have specific answers in the provided text. Then find and write their answers under each question"""
+                        
+                        # response = streamlit.session_state.qaChain({'query': prompt})
+                     
+                        streamlit.session_state.default_chat.append(response)
+                            
+                           
                 streamlitWrapper.setInputContainer('Ask PIXIE: ')
                 if streamlitWrapper.userInput():
                     userInput=streamlitWrapper.userInput()
                     with streamlit.spinner("Pixie is thinking..."): 
                      
-                        response = streamlit.session_state.conversation({'question': userInput})
-                        streamlit.session_state.chat_history = response['chat_history']
+                        response = streamlit.session_state.conversationChain({'question': userInput})
+                        streamlit.session_state.default_chat = response['chat_history']
                         
                
                 with responseContainer:
@@ -183,12 +202,10 @@ def main():
                      
 ################################# Mode: Question Answering #################################
 
-        elif mode== 'Answer Generation':
+        elif mode== 'Comments & Feedback ':
                 with  responseContainer:
                     message('Welcome to the ' + mode +' mode.')
                     streamlitWrapper.setInputContainer('Ask PIXIE: ')
             
 if __name__ == '__main__': 
     main()
-
-
