@@ -1,4 +1,5 @@
-from streamlit_chat import message
+#from streamlit_chat import message
+from st_chat_message import message
 import streamlit  #streamlit is the GUI 
 from dotenv import load_dotenv
 from src.PDFHandler import PDFHandler
