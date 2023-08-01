@@ -169,7 +169,7 @@ def main():
                     with streamlit.spinner("Pixie is thinking..."): 
                         prompt  =  """ 
                         You will be given a series of sentences from a paper. The sentences will be enclosed in triple backtrips (```).
-                        Your goal is to create a list of meaningful questions that have answers in the series of sentence.
+                        Your goal is to create a list of approximately 10 meaningful questions that have answers in the series of sentence.
                         Write the answers for each question under each question. 
                         sentences : ```{most_important_sents}{text}```
                         Response :"""
