@@ -108,7 +108,7 @@ def main():
                             prompt  =  """You will be given a title: {text} and a dictionary: {most_important_sents} that contains section titles as its keys and the content of those sections as its values.
                     
                             Your first goal is to add the title at the top of your response. 
-                            Your next goal is to deconstruct the dictionary, and place the section title, and summarize each section's content under the section title.
+                            Your next goal is to deconstruct the dictionary, and place the section title, and summarize each section's content concisely under the section title.
                             
                             Section Titles and Content :"""
                             
@@ -180,7 +180,7 @@ def main():
                         # response = streamlit.session_state.qaChain({'query': prompt})
                         #streamlit.session_state.default_chat.append(response['result'])
                         
-                        streamlit.session_state.default_chat.append(response)
+                        #streamlit.session_state.default_chat.append(response)
                             
                            
                 streamlitWrapper.setInputContainer('Ask PIXIE: ')
@@ -189,12 +189,15 @@ def main():
                     with streamlit.spinner("Pixie is thinking..."): 
                      
                         response = streamlit.session_state.conversationChain({'question': userInput})
-                        streamlit.session_state.default_chat = response['chat_history']
+                        streamlit.session_state.chat_history = response['chat_history']
+                        
                         
                
                 with responseContainer:
                     for chat in streamlit.session_state.default_chat:
-                        message(chat,avatar_style=pixieAvatar)
+                        
+                            message(chat,avatar_style=pixieAvatar)
+                            
                     for i, chat in enumerate(streamlit.session_state.chat_history):
                         if i % 2 == 0:
                             message(chat.content, is_user=True, avatar_style= userAvatar ,key=str(i) + userName)
