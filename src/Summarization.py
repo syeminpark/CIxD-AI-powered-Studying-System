@@ -4,25 +4,27 @@ from sumy.summarizers.lex_rank import LexRankSummarizer
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 from summarizer import Summarizer
+import streamlit
 
 class Summarization:
-    def __init__(self,llm,llmName,sentenceCount=40) -> None:
+    def __init__(self,llm,llmName,model) -> None:
         self.formattedPrompt=''
         self.llm=llm
         self.llmName=llmName
-        self.sentenceCount=sentenceCount
+        self.lex_rank=model
 
-    def lexRank(self,text):
+        
+    def lexRank(self,text,sentenceCount=40):
+        sentenceCount=sentenceCount
         tokenizer=Tokenizer("english")
         parser=PlaintextParser(text, tokenizer)
-        lex_rank=LexRankSummarizer()
-        most_important_sents= lex_rank(parser.document, sentences_count=self.sentenceCount)
+        most_important_sents= self.lex_rank(parser.document, sentences_count=sentenceCount)
         most_important_sents =[str(sent) for sent in most_important_sents if str(sent)]
         return most_important_sents
        
-    def bertExtractiveSummarize(self,text):
+    def bertExtractiveSummarize(self,text,sentenceCount=40):
         model = Summarizer()
-        most_important_sents = model(text, num_sentences=self.sentenceCount) # We specify a number of sentences
+        most_important_sents = model(text, num_sentences=sentenceCount) # We specify a number of sentences
         return most_important_sents
     
     def generateSummary(self,input,most_important_sents,text):

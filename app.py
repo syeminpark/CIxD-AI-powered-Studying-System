@@ -7,16 +7,17 @@ from src.SwitchLLM import switchLLM
 from src.Summarization import Summarization
 
 from src.StreamlitWrapper import StreamlitWrapper
+from sumy.summarizers.lex_rank import LexRankSummarizer
 import nltk
 
-@streamlit.cache
+@streamlit.cache_resource
 def load_model():
-	 nltk.download('punkt')
-         
+    nltk.download('punkt')
+    return LexRankSummarizer()
 
 def main():
     load_dotenv()
-    load_model()
+    
     #main configs
     configs={
         'page_title':'PIXIE',
@@ -30,7 +31,7 @@ def main():
         'subHeaderText': "CIxD Papers",
         'captionText' : "Select one or more papers to learn."
     }
- 
+    lexRank=load_model()
     streamlitWrapper.setSidebarConfigs(sidebarConfigs,)
     model_name=streamlitWrapper.getModelName()
     llm=switchLLM(streamlitWrapper.getModelName())
@@ -43,6 +44,8 @@ def main():
     modeOptions=['Summary','Q/A','Answer Generation']
     userAvatar='pixel-art'
     userName='Cixd Member'
+    summarization=Summarization(llm,model_name,lexRank)
+    
 
   ######## Mode changer #################################
     if not streamlitWrapper.isFileProcessed():
@@ -89,10 +92,10 @@ def main():
                             sentences : 
                             ```{most_important_sents}```
                             SUMMARY :"""
-                            sectionSummarization=Summarization(llm,model_name)
+                            
                         
-                            most_important_sents =sectionSummarization.lexRank(streamlit.session_state.section_text[sectionNameList[index]])
-                            summary=sectionSummarization.generateSummary(prompt,most_important_sents, sectionNameList[index])
+                            most_important_sents =summarization.lexRank(streamlit.session_state.section_text[sectionNameList[index]])
+                            summary=summarization.generateSummary(prompt,most_important_sents, sectionNameList[index])
                             streamlit.session_state.default_chat.append(summary)
                             
                                     
@@ -113,11 +116,11 @@ def main():
                                 sectionNameList.append(sectionName)
                                 
                             for i in range(len(streamlit.session_state.section_text)):
-                                sectionSummarization=Summarization(llm,model_name,10)
-                                most_important_sents= sectionSummarization.lexRank(streamlit.session_state.section_text[sectionNameList[i]])
+                                
+                                most_important_sents= summarization.lexRank(streamlit.session_state.section_text[sectionNameList[i]],10)
                                 dictionary[sectionNameList[i]]=most_important_sents 
-                            fullTextSummarization=Summarization(llm,model_name)
-                            summary= fullTextSummarization.generateSummary(prompt,str(dictionary),pdfHandler.getTitle())
+                     
+                            summary= summarization.generateSummary(prompt,str(dictionary),pdfHandler.getTitle())
                             streamlit.session_state.default_chat.append(summary)
                 
                 ##############INPUT############    
@@ -137,9 +140,9 @@ def main():
 
                             Response :"""
                         
-                        fullTextSummarization=Summarization(llm,model_name,60)
-                        most_important_sents= fullTextSummarization.lexRank(streamlit.session_state.full_text)
-                        summary=fullTextSummarization.generateSummary(prompt,most_important_sents,userInput)
+                        
+                        most_important_sents= summarization.lexRank(streamlit.session_state.full_text,60)
+                        summary=summarization.generateSummary(prompt,most_important_sents,userInput)
                         if streamlit.session_state.chat_history==None:
                             streamlit.session_state.chat_history=[]
                         streamlit.session_state.chat_history.append(userInput)
