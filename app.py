@@ -7,12 +7,16 @@ from src.SwitchLLM import switchLLM
 from src.Summarization import Summarization
 
 from src.StreamlitWrapper import StreamlitWrapper
-# import nltk
+import nltk
 
-# nltk.download('punkt')
+@streamlit.cache
+def load_model():
+	 nltk.download('punkt')
+         
 
 def main():
     load_dotenv()
+    load_model()
     #main configs
     configs={
         'page_title':'PIXIE',
@@ -87,7 +91,7 @@ def main():
                             SUMMARY :"""
                             sectionSummarization=Summarization(llm,model_name)
                         
-                            most_important_sents =sectionSummarization.bertExtractiveSummarize(streamlit.session_state.section_text[sectionNameList[index]])
+                            most_important_sents =sectionSummarization.lexRank(streamlit.session_state.section_text[sectionNameList[index]])
                             summary=sectionSummarization.generateSummary(prompt,most_important_sents, sectionNameList[index])
                             streamlit.session_state.default_chat.append(summary)
                             
@@ -110,7 +114,7 @@ def main():
                                 
                             for i in range(len(streamlit.session_state.section_text)):
                                 sectionSummarization=Summarization(llm,model_name,10)
-                                most_important_sents= sectionSummarization.bertExtractiveSummarize(streamlit.session_state.section_text[sectionNameList[i]])
+                                most_important_sents= sectionSummarization.lexRank(streamlit.session_state.section_text[sectionNameList[i]])
                                 dictionary[sectionNameList[i]]=most_important_sents 
                             fullTextSummarization=Summarization(llm,model_name)
                             summary= fullTextSummarization.generateSummary(prompt,str(dictionary),pdfHandler.getTitle())
@@ -134,7 +138,7 @@ def main():
                             Response :"""
                         
                         fullTextSummarization=Summarization(llm,model_name,60)
-                        most_important_sents= fullTextSummarization.bertExtractiveSummarize(streamlit.session_state.full_text)
+                        most_important_sents= fullTextSummarization.lexRank(streamlit.session_state.full_text)
                         summary=fullTextSummarization.generateSummary(prompt,most_important_sents,userInput)
                         if streamlit.session_state.chat_history==None:
                             streamlit.session_state.chat_history=[]
