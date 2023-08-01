@@ -67,7 +67,7 @@ class StreamlitWrapper:
                             streamlit.session_state.section_text =pdfHandler.getFilteredTextBySection()
                             
                             text_chunks= qa.get_text_chunks(streamlit.session_state.full_text)
-                            vectorstore=qa. get_vectorstore(text_chunks,'intfloat/e5-large-v2')
+                            vectorstore=qa. get_vectorstore(text_chunks,'thenlper/gte-large')
                             streamlit.session_state.conversation=qa.get_conversation_chain(vectorstore,llm)
                             
                     if(self.uploadedPDF):
@@ -78,7 +78,7 @@ class StreamlitWrapper:
                         streamlit.session_state.section_text =pdfHandler.getFilteredTextBySection()
                         
                         text_chunks= qa.get_text_chunks(streamlit.session_state.full_text)
-                        vectorstore=qa. get_vectorstore(text_chunks,'intfloat/e5-large-v2')
+                        vectorstore=qa. get_vectorstore(text_chunks,'thenlper/gte-large')
                         streamlit.session_state.conversation=qa.get_conversation_chain(vectorstore,llm)
                         
     def isFileProcessed(self):

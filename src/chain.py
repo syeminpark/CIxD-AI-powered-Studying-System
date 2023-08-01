@@ -25,14 +25,14 @@ def get_text_chunks(text):
     
 def get_vectorstore(text_chunks):
     #embeddings =HuggingFaceInstructEmbeddings(model_name="intfloat/e5-large-v2")
-    embeddings = HuggingFaceInstructEmbeddings(model_name="intfloat/multilingual-e5-large")
+    embeddings = HuggingFaceInstructEmbeddings(model_name="thenlper/gte-large")
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
 
     return vectorstore
 
 def get_embeddings(text_chunks):
     #embeddings =HuggingFaceInstructEmbeddings(model_name="intfloat/e5-large-v2")
-    embeddings =HuggingFaceInstructEmbeddings(model_name="intfloat/multilingual-e5-large")
+    embeddings =HuggingFaceInstructEmbeddings(model_name="thenlper/gte-large")
     return embeddings.embed_documents(text_chunks)
     
 
