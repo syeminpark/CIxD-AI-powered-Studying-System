@@ -1,5 +1,5 @@
-from streamlit_chat import message
-#from st_chat_message import message
+#from streamlit_chat import message
+from st_chat_message import message
 import streamlit  #streamlit is the GUI 
 from dotenv import load_dotenv
 from src.PDFHandler import PDFHandler
@@ -10,6 +10,7 @@ from src.Summarization import Summarization
 from src.StreamlitWrapper import StreamlitWrapper
 from sumy.summarizers.lex_rank import LexRankSummarizer
 import nltk
+from langchain.schema import  HumanMessage, SystemMessage
 
 @streamlit.cache_resource
 def load_model():
@@ -94,7 +95,7 @@ def main():
                             SUMMARY :"""
                             
                             most_important_sents =summarization.lexRank(streamlit.session_state.section_text[sectionNameList[index]])
-                            summary=summarization.generate(prompt,most_important_sents, sectionNameList[index])
+                            summary=summarization.generateWithSummary(prompt,most_important_sents, sectionNameList[index])
                             streamlit.session_state.default_chat.append(summary)
                             
                                     
@@ -118,7 +119,7 @@ def main():
                                 most_important_sents= summarization.lexRank(streamlit.session_state.section_text[sectionNameList[i]],10)
                                 dictionary[sectionNameList[i]]=most_important_sents 
                      
-                            summary= summarization.generate(prompt,str(dictionary),pdfHandler.getTitle())
+                            summary= summarization.generateWithSummary(prompt,str(dictionary),pdfHandler.getTitle())
                             streamlit.session_state.default_chat.append(summary)
                 
                 ##############INPUT############    
@@ -139,7 +140,7 @@ def main():
                             Response :"""
                         
                         most_important_sents= summarization.lexRank(streamlit.session_state.full_text,60)
-                        summary=summarization.generate(prompt,most_important_sents,userInput)
+                        summary=summarization.generateWithSummary(prompt,most_important_sents,userInput)
                         if streamlit.session_state.chat_history==None:
                             streamlit.session_state.chat_history=[]
                         streamlit.session_state.chat_history.append(userInput)
@@ -156,7 +157,7 @@ def main():
                         else:
                             message(chat, key=str(i)) 
                     
-################################# Mode: Question Generation #################################
+################################# Mode: Question & Answers #################################
         elif mode== "Q/A":
                 streamlitWrapper.resetConversation()
                 streamlit.session_state.default_chat= [
@@ -165,20 +166,19 @@ def main():
                 
                 if streamlit.button("OPEN PIXIE's NOTES"):
                     with streamlit.spinner("Pixie is thinking..."): 
-                        prompt  =  """
+                        prompt  =  """ 
                         You will be given a series of sentences from a paper. The sentences will be enclosed in triple backtrips (```).
-                        Your goal is to create a list of approximately 10 most meaningful questions that may be of interest to a reader. 
-                        These questions must have specific answers in the provided text. Then find and write their answers under each question.
+                        Your goal is to create a list of meaningful questions that have answers in the series of sentence.
+                        Write the answers for each question under each question. 
                         sentences : ```{most_important_sents}{text}```
                         Response :"""
                         
                         most_important_sents= summarization.lexRank(streamlit.session_state.full_text,60)
-                        response=summarization.generate(prompt,most_important_sents,"")
-                        print(response)
-                        #prompt  =   """Create a list of questions that may be of interest to a reader. These questions must have specific answers in the provided text. Then find and write their answers under each question"""
-                        
+                        response=summarization.generateWithSummary(prompt,most_important_sents,"")
+                        #prompt  =  """Create a list of questions that may be of interest to a reader. These questions must have specific answers in the provided text. Then find and write their answers under each question"""
                         # response = streamlit.session_state.qaChain({'query': prompt})
-                     
+                        #streamlit.session_state.default_chat.append(response['result'])
+                        
                         streamlit.session_state.default_chat.append(response)
                             
                            
@@ -200,12 +200,69 @@ def main():
                         else:
                             message(chat.content, key=str(i)) 
                      
-################################# Mode: Question Answering #################################
+################################# Mode: Comments & Feedback #################################
 
-        elif mode== 'Comments & Feedback ':
-                with  responseContainer:
-                    message('Welcome to the ' + mode +' mode.')
-                    streamlitWrapper.setInputContainer('Ask PIXIE: ')
+        elif mode== 'Comments & Feedback':
+            streamlitWrapper.resetConversation()
+            streamlit.session_state.default_chat= [
+            'Pixie here!', 
+            "Oh, I really enjoyed this paper. I can't wait to tell you my thoughts on this one",
+            "Click the provided feedback buttons below to see my enthusiastic feedback!",
+            'I might be a little critical, but it is just that I want to learn more :-) '
+            ]
+            
+            buttonNames=[ "Novel? ","Clear Research Gap?", "Limitation?", 'Well Structured?']
+            buttons=[]
+            feedbackQuuestions=[
+                "what is the novelty of this paper?",
+                "what research gap or limitations from different research does this paper build upon?",
+                "What is the limitation, hindsight, weakness, or future work needed for this paper?",
+                "What is the structure, overall flow of this paper?"
+            ]
+            feedbackInstructions=["is truly novel or not , or could have been novel when first published or not",
+                                  "has or does not have a clear research gap",
+                                  "has or does not have at least one limitation, hindsight, weakness, future work needed that can hamper the paper's credibility.",
+                                  "has a well built strucutre or not"
+            ]
+                                  
+                                
+            
+            for buttonName in buttonNames:
+               buttons.append(streamlit.button(buttonName))
+            
+            for i, button in enumerate(buttons):
+                if button:
+                    with streamlit.spinner("Pixie is thinking..."): 
+                            response = streamlit.session_state.qaChain({'query': feedbackQuuestions[i]})
+                            print(response)
+                            
+                            secondPrompt  =  """ 
+                            "Be critical with your previous opinion. Use general thinking to counter argue the extractions of this paper.
+                            Finally decide your final opinion whether the paper{question}. 
+                          
+                            Remember to keep your response concise.
+                            Your previous opinion will be enclosed in triple backtrips (```).
+                            The extractions from the paper will be enclosed in double backtrips (``).
+                            previous opinion: ```{idea}```
+                            Extractions from the paper: ``{context}``
+                            
+                            Response:
+                            """
+                            
+                            output=''
+                            if(model_name!='gpt-3.5-turbo'):
+                                output=llm(prompt=secondPrompt.format(question = feedbackInstructions[i], idea= response['result'],context= response['source_documents']))
+                            else:
+                                output=llm.predict_messages([HumanMessage(question =  feedbackInstructions[i],content= secondPrompt.format(question = feedbackInstructions[i],idea=response['result'], context= response['source_documents']))]).content
+                        
+                            
+                            streamlit.session_state.default_chat.append(output)
+            
+            
+            
+            with  responseContainer:
+                for chat in streamlit.session_state.default_chat:
+                    message(chat)
             
 if __name__ == '__main__': 
     main()

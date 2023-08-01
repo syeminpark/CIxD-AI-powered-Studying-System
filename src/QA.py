@@ -45,8 +45,10 @@ class QA:
         return conversation_chain
 
     def getRetrievalQA(self,vectorstore,llm,):
-        return RetrievalQA.from_chain_type(llm,retriever=vectorstore.as_retriever())
-        
+        return RetrievalQA.from_chain_type(llm,retriever=vectorstore.as_retriever(),return_source_documents=True)
+
+
+
     
 
     
