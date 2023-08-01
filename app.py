@@ -45,6 +45,7 @@ def main():
     
     modeOptions=['Summary','Q/A','Comments & Feedback']
     userAvatar='pixel-art'
+    pixieAvatar='avataaars'
     userName='Cixd Member'
     summarization=Summarization(llm,model_name,lexRank)
     
@@ -52,11 +53,11 @@ def main():
   ######## Mode changer #################################
     if not streamlitWrapper.isFileProcessed():
         with responseContainer:
-            message('Hello. This is Pixie Park (박픽시) :) I am a 1st year master student in CIxD Lab.')
-            message("Lets explore our lab's papers together!")
-            message('Although I am a newbie, I can still decently summarize, answer questions, and provide feeback on HCI papers.')
-            message("To talk with me, upload or select a publication, then click the 'SHARE WITH PIXIE` button. ")
-            message("See you soon!")
+            message('Hello. This is Pixie Park (박픽시) :) I am a 1st year master student in CIxD Lab.', avatar_style=pixieAvatar)
+            message("Lets explore our lab's papers together!",avatar_style=pixieAvatar)
+            message('Although I am a newbie, I can still decently summarize, answer questions, and provide feeback on HCI papers.',avatar_style=pixieAvatar)
+            message("To talk with me, upload or select a publication, then click the 'SHARE WITH PIXIE` button. ",avatar_style=pixieAvatar)
+            message("See you soon!",avatar_style=pixieAvatar)
     else:
      
         streamlitWrapper.setMode('Select the Mode: ', modeOptions)
@@ -150,12 +151,12 @@ def main():
                 #########################Chat
                 with responseContainer:
                     for chat in streamlit.session_state.default_chat:
-                        message(chat)
+                        message(chat,avatar_style=pixieAvatar)
                     for i, chat in enumerate(streamlit.session_state.chat_history):
                         if i % 2 == 0:
                             message(chat, is_user=True, avatar_style= userAvatar ,key=str(i) + userName)
                         else:
-                            message(chat, key=str(i)) 
+                            message(chat,avatar_style=pixieAvatar, key=str(i)) 
                     
 ################################# Mode: Question & Answers #################################
         elif mode== "Q/A":
@@ -193,12 +194,12 @@ def main():
                
                 with responseContainer:
                     for chat in streamlit.session_state.default_chat:
-                        message(chat)
+                        message(chat,avatar_style=pixieAvatar)
                     for i, chat in enumerate(streamlit.session_state.chat_history):
                         if i % 2 == 0:
                             message(chat.content, is_user=True, avatar_style= userAvatar ,key=str(i) + userName)
                         else:
-                            message(chat.content, key=str(i)) 
+                            message(chat.content, avatar_style=pixieAvatar,key=str(i)) 
                      
 ################################# Mode: Comments & Feedback #################################
 
@@ -253,7 +254,7 @@ def main():
                             if(model_name!='gpt-3.5-turbo'):
                                 output=llm(prompt=secondPrompt.format(question = feedbackInstructions[i], idea= response['result'],context= response['source_documents']))
                             else:
-                                output=llm.predict_messages([HumanMessage(question =  feedbackInstructions[i],content= secondPrompt.format(question = feedbackInstructions[i],idea=response['result'], context= response['source_documents']))]).content
+                                output=llm.predict_messages([HumanMessage(question =  feedbackInstructions[i],content= secondPrompt.format(question = feedbackInstructions[i],idea=response['result'], context= response['source_documents']))],).content
                         
                             
                             streamlit.session_state.default_chat.append(output)
@@ -262,7 +263,7 @@ def main():
             
             with  responseContainer:
                 for chat in streamlit.session_state.default_chat:
-                    message(chat)
+                    message(chat,avatar_style=pixieAvatar)
             
 if __name__ == '__main__': 
     main()
