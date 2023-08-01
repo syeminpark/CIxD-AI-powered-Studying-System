@@ -69,7 +69,6 @@ def main():
                     "You can also ask me to do summaries in different ways, if there is something wrong... What do you think makes a summary great?", "But I recommend reading the paper first and then seeing my summaries. This way you can compare what you think is important, to what I thought was the essence of the text. "]
                  
                 summarySectionButtonsList=[]
-         
                 if(len(summarySectionButtonsList)==0 and  streamlit.session_state.section_text!= None):  
                     summarySectionButtonsList.append(streamlit.button('Summarize: ' + 'ALL'))
                     for sectionName in streamlit.session_state.section_text:
@@ -93,7 +92,6 @@ def main():
                             ```{most_important_sents}```
                             SUMMARY :"""
                             
-                        
                             most_important_sents =summarization.lexRank(streamlit.session_state.section_text[sectionNameList[index]])
                             summary=summarization.generateSummary(prompt,most_important_sents, sectionNameList[index])
                             streamlit.session_state.default_chat.append(summary)
@@ -116,7 +114,6 @@ def main():
                                 sectionNameList.append(sectionName)
                                 
                             for i in range(len(streamlit.session_state.section_text)):
-                                
                                 most_important_sents= summarization.lexRank(streamlit.session_state.section_text[sectionNameList[i]],10)
                                 dictionary[sectionNameList[i]]=most_important_sents 
                      
@@ -139,7 +136,6 @@ def main():
                             sentences : ```{most_important_sents}```
 
                             Response :"""
-                        
                         
                         most_important_sents= summarization.lexRank(streamlit.session_state.full_text,60)
                         summary=summarization.generateSummary(prompt,most_important_sents,userInput)

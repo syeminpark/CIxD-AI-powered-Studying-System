@@ -32,6 +32,9 @@ def switchLLM(model_name):
     elif model_name=='llama_v2_70b_replicate':
         llm = Replicate(model="replicate/llama70b-v2-chat:2c1608e18606fad2812020dc541930f2d0495ce32eee50074220b87300bc16e1",
                         input= {"max_length":2048,"max_new_tokens": 2048})
+    elif model_name=='airoboros-llama-2-70b_replicate':
+        llm = Replicate(model= "uwulewd/airoboros-llama-2-70b:7e2a3d70dff10eb131188834f075cb49f59f95f45713590c63952867e9141a2e",
+                        input= {"max_length":2048,"max_new_tokens": 2048})
     elif model_name=='falcon7b_octoAI':
         llm = OctoAIEndpoint(
             model_kwargs={
