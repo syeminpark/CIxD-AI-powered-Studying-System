@@ -42,19 +42,16 @@ class PDFHandler:
         self.streamData=data
         
     def structurePDF(self,type):
-        
-        print(os.path.realpath(os.path.join(os.path.dirname(__file__), '..')))
-        
     
-        if os.path.isfile(os.getcwd()+"/tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip"):
+        if os.path.isfile("/tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip"):
             os.remove(os.getcwd()+"/tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip")
 
-        if os.path.isfile(os.getcwd()+"tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip"):
-            os.remove(os.getcwd()+"tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip")
+        if os.path.isfile("tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip"):
+            os.remove("tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip")
         
        
         if os.path.isfile(os.getcwd()+ self.zip_file):
-                os.remove(os.getcwd()+ self.zip_file)
+            os.remove(os.getcwd()+ self.zip_file)
                 
 
         try:
@@ -81,11 +78,13 @@ class PDFHandler:
             )
             extract_pdf_operation.set_options(extract_pdf_options)
             result: FileRef = extract_pdf_operation.execute(execution_context)
-            print( )
+      
              #windows
             if os.name == 'nt':
+                print('windows',os.getcwd())
                 result.save_as("tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip")
                 shutil.copy2("tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip", os.getcwd()+ self.zip_file)
+                
             else: 
                 result.save_as("/tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip")
                 shutil.copy2("/tmp/sdk_result/4b0868b22fcc11ee8830de912ef49a28.zip", os.getcwd()+ self.zip_file)
@@ -97,6 +96,7 @@ class PDFHandler:
 
             
     def getStructuredData(self):
+        
         archive = zipfile.ZipFile(os.getcwd()+ self.zip_file, "r")
         jsonentry = archive.open("structuredData.json")
         jsondata = jsonentry.read()
