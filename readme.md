@@ -44,7 +44,3 @@ To use the system, follow these steps:
    ```
 
 2. The application will launch in your default web browser, displaying the user interface.
-
-3. Load your own PDF document into the app or select from the provided list.
-
-4. Select your preferred mode and interact with the UI. 
