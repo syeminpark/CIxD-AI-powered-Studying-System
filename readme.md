@@ -15,7 +15,7 @@ PIXIE  is a Python application that allows you to chat with PDF documents, KAIST
 
 ## Dependencies and Installation 
 ----------------------------
-To install 'CIxD Aipowered Studying System', please follow these steps:
+To install 'PIXIE', please follow these steps:
 
 1. Clone the repository to your local machine.
 
