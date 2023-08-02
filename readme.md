@@ -8,7 +8,7 @@
 
 ## Introduction 
 ------------
-PIXIE  is a Python application that allows you to chat with PDF documents, KAIST Cixd lab research papers to be specific. The application offers 3 modes; summarization, question generation, answer generation. This app provides the option to choose a diverse range of language models to generate answers to your queries. Please note that the app will only respond to questions related to the loaded PDFs.
+PIXIE  is a Python application that allows you to chat with PDF documents, KAIST Cixd lab research papers to be specific. The application offers 3 modes; summarization, Q/A, and feeback & comments. This app provides the option to choose a diverse range of language models to generate answers to your queries. Please note that the app will only respond to questions related to the loaded PDFs.
 
 ## How It Works 
 ------------
@@ -33,7 +33,6 @@ To install 'CIxD Aipowered Studying System', please follow these steps:
    PDF_SERVICES_CLIENT_ID=''
    PDF_SERVICES_CLIENT_SECRET=''
     ```
-
 
 ## Usage
 -----
