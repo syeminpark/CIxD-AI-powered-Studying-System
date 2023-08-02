@@ -1,6 +1,6 @@
 
 
-![alt text](https://github.com/syeminpark/PIXIE-Papers-In-uX-Interaction-Exploration/blob/main/Pixie.JPG?raw=true)
+![alt text](https://github.com/syeminpark/PIXIE-Papers-In-uX-Interaction-Exploration/blob/main/PixiePark.JPG?raw=true)
 
 
 
